@@ -69,41 +69,8 @@ def filter_soft_facts(
         return candidates
 
     _enrich_commute_distance(candidates, soft_facts)
-    _enrich_from_precomputed(candidates)
 
     return candidates
-
-
-def _enrich_from_precomputed(candidates: list[dict[str, Any]]) -> None:
-    """Attach pre-computed geo distances from listing_geo table (no Overpass calls)."""
-    import sqlite3
-    from app.config import get_settings
-    ids = [str(c.get("listing_id", "")) for c in candidates]
-    if not ids:
-        return
-    try:
-        db_path = get_settings().db_path
-        con = sqlite3.connect(str(db_path))
-        placeholders = ",".join("?" * len(ids))
-        rows = con.execute(
-            f"SELECT listing_id, dist_lake_km, dist_park_km, dist_school_km, "
-            f"dist_transport_km, dist_shop_km, dist_city_center_km "
-            f"FROM listing_geo WHERE listing_id IN ({placeholders})",
-            ids,
-        ).fetchall()
-        con.close()
-        geo = {r[0]: r[1:] for r in rows}
-        for c in candidates:
-            row = geo.get(str(c.get("listing_id", "")))
-            if row:
-                c["computed_distance_to_lake_km"]      = row[0]
-                c["computed_distance_to_park_km"]      = row[1]
-                c["computed_distance_to_school_km"]    = row[2]
-                c["computed_distance_to_transport_km"] = row[3]
-                c["computed_distance_to_shop_km"]      = row[4]
-                c["computed_distance_to_city_center_km"] = row[5]
-    except Exception:
-        pass
 
 
 # --- Helpers ---

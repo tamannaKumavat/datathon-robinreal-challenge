@@ -10,9 +10,21 @@ from app.models.schemas import ListingData, RankedListingResult
 
 _CORPUS: tuple | None = None
 _SIGLIP_MODEL: tuple | None = None  # (model, processor)
+_VLM: dict[str, dict] | None = None
 _DATA_DIR = Path("/workshop/retrieval_aws/data")
+_VLM_PATH = Path("/workshop/vlm_ranking/combined_results_full_6gpu.jsonl")
 RRF_K = 60
 _SIGLIP_MODEL_ID = "google/siglip2-so400m-patch14-384"
+
+# Maps soft_facts keys → (vlm_feature_key, is_binary)
+# Numeric scores are 1–5; binary features are bool.
+_VLM_SIGNAL_MAP: dict[str, tuple[str, bool]] = {
+    "bright":        ("brightness_score", False),
+    "modern":        ("modernity_score", False),
+    "modern_kitchen": ("kitchen_appeal_score", False),
+    "furnished":     ("is_furnished", True),
+    "nice_views":    ("has_balcony_or_terrace_visible", True),
+}
 
 
 def _load_corpus() -> tuple:
@@ -68,6 +80,43 @@ def _encode_query_siglip(query: str) -> np.ndarray | None:
         return v / max(norm, 1e-9)
     except Exception:
         return None
+
+
+def _load_vlm() -> dict[str, dict]:
+    global _VLM
+    if _VLM is not None:
+        return _VLM
+    _VLM = {}
+    if _VLM_PATH.exists():
+        with open(_VLM_PATH) as f:
+            for line in f:
+                try:
+                    r = json.loads(line)
+                    if r.get("success") and r.get("features"):
+                        _VLM[str(r["id"])] = r["features"]
+                except Exception:
+                    pass
+    return _VLM
+
+
+def _vlm_score(feats: dict, signals: list[tuple[str, bool]]) -> float:
+    """Compute normalized [0,1] VLM score from the relevant signal columns."""
+    total = 0.0
+    count = 0
+    for col, is_binary in signals:
+        val = feats.get(col)
+        if val is None:
+            continue
+        if is_binary:
+            total += 1.0 if val else 0.0
+        else:
+            # numeric 1–5
+            try:
+                total += (float(val) - 1.0) / 4.0
+            except (TypeError, ValueError):
+                continue
+        count += 1
+    return total / count if count else 0.0
 
 
 def _rrf_fuse(rank_lists: list[list[str]], k: int = RRF_K) -> list[tuple[str, float]]:

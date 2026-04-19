@@ -41,10 +41,24 @@ _bm25.load_and_build()
 print("BM25 ready.")
 
 print("Loading SigLIP text tower (ONNX)...")
-from app.participant.ranking import _load_siglip, _load_corpus
+from app.participant.ranking import _load_siglip, _load_corpus, _load_vlm
 _load_siglip()
 _load_corpus()
-print("SigLIP + corpus ready.")
+_load_vlm()
+print("SigLIP + corpus + VLM ready.")
+
+_VLM_SCORE_COLS = [
+    "brightness_score", "modernity_score", "condition_score",
+    "spaciousness_score", "kitchen_appeal_score", "bathroom_appeal_score",
+]
+
+def _attach_vlm(result_dict: dict) -> dict:
+    """Attach pre-computed VLM score fields so downstream rankers can use them."""
+    vlm = _load_vlm()
+    feats = vlm.get(str(result_dict.get("listing_id"))) or {}
+    for col in _VLM_SCORE_COLS:
+        result_dict[col] = feats.get(col)
+    return result_dict
 
 
 class Hit(BaseModel):
@@ -185,7 +199,7 @@ def pipeline(body: dict, top_k: int = Query(30, ge=1, le=500), min_results: int 
         total_results=len(ranked),
         relaxations_applied=relaxations,
         results=[
-            {
+            _attach_vlm({
                 "listing_id": r.listing_id,
                 "score": r.score,
                 "city": r.listing.city,
@@ -196,17 +210,17 @@ def pipeline(body: dict, top_k: int = Query(30, ge=1, le=500), min_results: int 
                 "features": r.listing.features,
                 "street": r.listing.street,
                 "title": r.listing.title,
-            }
+                "hero_image_url": r.listing.hero_image_url,
+                "original_url": r.listing.original_listing_url,
+            })
             for r in ranked[:top_k]
         ],
     )
 
 
 @app.post("/pipeline_embed", response_model=PipelineResponse)
-def pipeline_embed(body: dict, top_k: int = Query(20, ge=1, le=500), alpha: float = Query(0.7, ge=0.0, le=1.0)):
-    """Hard filter → soft filter → rank_listings → BGE-M3 embed_score appended."""
-    from collections import defaultdict
-
+def pipeline_embed(body: dict, top_k: int = Query(20, ge=1, le=500)):
+    """Hard filter → BGE-M3+SigLIP+BM25 ranking → VLM fields attached."""
     query = body.get("query", "")
     hard_facts = extract_hard_facts(query)
     hard_facts.limit = 5000
@@ -215,6 +229,12 @@ def pipeline_embed(body: dict, top_k: int = Query(20, ge=1, le=500), alpha: floa
     soft_facts = extract_soft_facts(query)
     if hard_facts.neighborhood:
         soft_facts["neighborhoods"] = hard_facts.neighborhood
+    qv, qw = S.encode_query(_bge, _ort_tok, _ort_sess, query)
+    soft_facts["_query_dense"] = qv
+    soft_facts["_query_sparse"] = qw
+    soft_facts["_query"] = query
+    bm25_hits = _bm25.search(query, top_k=10)
+    soft_facts["_bm25_top"] = {h["id"]: rank + 1 for rank, h in enumerate(bm25_hits)}
     candidates, relaxations = search_with_relaxation(_settings.db_path, to_hard_filter_params(hard_facts))
     candidates = filter_soft_facts(candidates, soft_facts)
     ranked = rank_listings(candidates, soft_facts)
@@ -223,49 +243,29 @@ def pipeline_embed(body: dict, top_k: int = Query(20, ge=1, le=500), alpha: floa
         return PipelineResponse(query=query, total_candidates=len(candidates), total_results=0,
                                 relaxations_applied=relaxations, results=[])
 
-    # BGE-M3 encode query → compute embed_score for each result
-    qv, qw = S.encode_query(_bge, _ort_tok, _ort_sess, query)
-    top_ids = {r.listing_id for r in ranked[:top_k]}
-
-    d_scores_raw, d_idxs = _faiss.search(qv, len(_ids))
-    dense = {_ids[i]: float(s) for i, s in zip(d_idxs[0], d_scores_raw[0]) if _ids[i] in top_ids}
-
-    sp_scores: dict[str, float] = defaultdict(float)
-    for tok_id, qweight in qw.items():
-        for doc_idx, dw in _inv.get(tok_id, []):
-            lid = _ids[doc_idx]
-            if lid in top_ids:
-                sp_scores[lid] += qweight * dw
-
-    def _minmax(d):
-        if not d: return {}
-        vals = list(d.values())
-        lo, hi = min(vals), max(vals)
-        rng = hi - lo if hi > lo else 1.0
-        return {k: (v - lo) / rng for k, v in d.items()}
-
-    dn, sn = _minmax(dense), _minmax(dict(sp_scores))
-    embed_scores = {lid: round(alpha * dn.get(lid, 0.0) + (1 - alpha) * sn.get(lid, 0.0), 6) for lid in top_ids}
-
-    results = []
-    for r in ranked[:top_k]:
-        results.append({
-            "listing_id": r.listing_id,
-            "score": r.score,
-            "embed_score": embed_scores.get(r.listing_id, 0.0),
-            "city": r.listing.city,
-            "canton": r.listing.canton,
-            "price_chf": r.listing.price_chf,
-            "rooms": r.listing.rooms,
-            "area_sqm": r.listing.living_area_sqm,
-            "features": r.listing.features,
-            "street": r.listing.street,
-            "title": r.listing.title,
-        })
-
-    return PipelineResponse(query=query, total_candidates=len(candidates),
-                            total_results=len(ranked), relaxations_applied=relaxations,
-                            results=results)
+    return PipelineResponse(
+        query=query,
+        total_candidates=len(candidates),
+        total_results=len(ranked),
+        relaxations_applied=relaxations,
+        results=[
+            _attach_vlm({
+                "listing_id": r.listing_id,
+                "score": r.score,
+                "city": r.listing.city,
+                "canton": r.listing.canton,
+                "price_chf": r.listing.price_chf,
+                "rooms": r.listing.rooms,
+                "area_sqm": r.listing.living_area_sqm,
+                "features": r.listing.features,
+                "street": r.listing.street,
+                "title": r.listing.title,
+                "hero_image_url": r.listing.hero_image_url,
+                "original_url": r.listing.original_listing_url,
+            })
+            for r in ranked[:top_k]
+        ],
+    )
 
 
 @app.get("/bm25", response_model=BM25Response)
