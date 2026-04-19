@@ -4,6 +4,9 @@
 
 Demo Video: https://drive.google.com/file/d/1V98dlAsOfrwu3g5DToSiGAzXopMvh75-/view?usp=sharing
 
+<img width="1806" height="1574" alt="911a0b9642bd3b4fddb2d767a78faf18" src="https://github.com/user-attachments/assets/a80984c9-6371-4829-bff9-987f718fb6c8" />
+
+
 This repository is a minimal starter harness for participants building listing search and ranking systems.
 
 Using this harness is optional. You are free to build your submission with it, adapt only parts of it, or implement your own solution independently.
