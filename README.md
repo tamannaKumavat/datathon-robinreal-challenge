@@ -1,5 +1,7 @@
 # Datathon 2026 Challenge Harness
 
+> Built with Claude Code and AWS EC2 — see [aws.md](aws.md) and [CLAUDE.md](CLAUDE.md).
+
 This repository is a minimal starter harness for participants building listing search and ranking systems.
 
 Using this harness is optional. You are free to build your submission with it, adapt only parts of it, or implement your own solution independently.
