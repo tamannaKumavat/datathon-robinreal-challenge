@@ -75,6 +75,7 @@ class HardFilterParams:
     features_min_match: int | None = None  # if set, require at least N features to match (SUM); else AND all
     offer_type: str | None = None
     object_category: list[str] | None = None
+    exclude_object_category: list[str] | None = None
     limit: int = 20
     offset: int = 0
     sort_by: str | None = None
@@ -172,6 +173,12 @@ def search_listings(db_path: Path, filters: HardFilterParams) -> list[dict[str, 
         like_clauses = " OR ".join("object_category LIKE ?" for _ in object_category)
         where_clauses.append(f"({like_clauses})")
         params.extend(f"%{c}%" for c in object_category)
+
+    exclude_category = _normalize_list(filters.exclude_object_category)
+    if exclude_category:
+        not_like_clauses = " AND ".join("(object_category IS NULL OR object_category NOT LIKE ?)" for _ in exclude_category)
+        where_clauses.append(f"({not_like_clauses})")
+        params.extend(f"%{c}%" for c in exclude_category)
 
     features = _normalize_list(filters.features)
     if features:

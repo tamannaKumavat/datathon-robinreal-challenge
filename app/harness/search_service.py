@@ -228,7 +228,12 @@ def search_with_relaxation(
     return best, best_names if best_names else None
 
 
+_NON_RESIDENTIAL = ["Gewerbeobjekt", "Parkplatz", "Einzelgarage", "Tiefgarage", "Bastelraum"]
+
+
 def to_hard_filter_params(hard_facts: HardFilters) -> HardFilterParams:
+    # Exclude commercial/parking categories unless the query explicitly requests them
+    exclude = None if hard_facts.object_category else _NON_RESIDENTIAL
     return HardFilterParams(
         city=hard_facts.city,
         postal_code=hard_facts.postal_code,
@@ -246,6 +251,7 @@ def to_hard_filter_params(hard_facts: HardFilters) -> HardFilterParams:
         features=hard_facts.features,
         offer_type=hard_facts.offer_type,
         object_category=hard_facts.object_category,
+        exclude_object_category=exclude,
         limit=hard_facts.limit,
         offset=hard_facts.offset,
         sort_by=hard_facts.sort_by,
