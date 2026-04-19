@@ -112,6 +112,7 @@ async def listings(body: dict):
     candidates, _ = search_with_relaxation(_settings.db_path, to_hard_filter_params(hard_facts))
     candidates = filter_soft_facts(candidates, soft_facts)
     ranked = rank_listings(candidates, soft_facts)
+
     page = ranked[offset: offset + limit]
     return {
         "listings": [
@@ -150,7 +151,7 @@ class PipelineResponse(BaseModel):
 
 
 @app.post("/pipeline", response_model=PipelineResponse)
-def pipeline(body: dict, top_k: int = Query(20, ge=1, le=500)):
+def pipeline(body: dict, top_k: int = Query(30, ge=1, le=500), min_results: int = Query(10, ge=0, le=500)):
     query = body.get("query", "")
     hard_facts = extract_hard_facts(query)
     hard_facts.limit = 5000
@@ -168,6 +169,16 @@ def pipeline(body: dict, top_k: int = Query(20, ge=1, le=500)):
     candidates, relaxations = search_with_relaxation(_settings.db_path, to_hard_filter_params(hard_facts))
     candidates = filter_soft_facts(candidates, soft_facts)
     ranked = rank_listings(candidates, soft_facts)
+
+    if len(ranked) < min_results:
+        from app.core.hard_filters import HardFilterParams
+        fb_candidates, _ = search_with_relaxation(_settings.db_path, HardFilterParams(limit=200, offset=0))
+        fb_candidates = filter_soft_facts(fb_candidates, soft_facts)
+        fb_ranked = rank_listings(fb_candidates, soft_facts)
+        existing_ids = {r.listing_id for r in ranked}
+        extras = [r for r in fb_ranked if r.listing_id not in existing_ids]
+        ranked = ranked + extras[:max(0, min_results - len(ranked))]
+
     return PipelineResponse(
         query=query,
         total_candidates=len(candidates),
