@@ -5,6 +5,7 @@
 Demo Video: https://drive.google.com/file/d/1V98dlAsOfrwu3g5DToSiGAzXopMvh75-/view?usp=sharing
 
 <img width="1806" height="1574" alt="911a0b9642bd3b4fddb2d767a78faf18" src="https://github.com/user-attachments/assets/a80984c9-6371-4829-bff9-987f718fb6c8" />
+<img width="863" height="659" alt="image" src="https://github.com/user-attachments/assets/42b48e9c-3e90-4ea2-b7b7-4f36599b40e3" />
 
 
 This repository is a minimal starter harness for participants building listing search and ranking systems.
