@@ -4,20 +4,19 @@
 
 Demo Video: https://drive.google.com/file/d/1V98dlAsOfrwu3g5DToSiGAzXopMvh75-/view?usp=sharing
 
-<img width="1806" height="1574" alt="911a0b9642bd3b4fddb2d767a78faf18" src="https://github.com/user-attachments/assets/a80984c9-6371-4829-bff9-987f718fb6c8" />
-<img width="863" height="659" alt="image" src="https://github.com/user-attachments/assets/42b48e9c-3e90-4ea2-b7b7-4f36599b40e3" />
-<img width<img width="823" height="505" alt="image" src="https://github.com/user-attachments/assets/b0fa0b63-5fad-4c69-9441-eafae70c786b" />
-<img width="1253" height="738" alt="image" src="https://github.com/user-attachments/assets/69b0e52a-4f5c-4ce8-8659-14c1361e0762" />
-<img width="1253" height="750" alt="image" src="https://github.com/user-attachments/assets/05edbadf-974d-49ad-9559-1c3fea9d5b19" />
-<img width="1260" height="755" alt="image" src="https://github.com/user-attachments/assets/e49a9df1-2c35-4196-84ea-5e9890571cac" />
-<img width="1283" height="780" alt="image" src="https://github.com/user-attachments/assets/b1a76407-1079-424b-ad1e-291806fdfb5e" />
-<img width="898" height="532" alt="image" src="https://github.com/user-attachments/assets/7b2a4f00-4c61-4385-b2a4-10cae052f017" />
-<img <img width="925" height="571" alt="image" src="https://github.com/user-attachments/assets/d93eabb4-6677-430b-9aeb-3ce79129c531" />
-<img width="964" height="627" alt="image" src="https://github.com/user-attachments/assets/eae80919-5227-4428-9758-cbb05f27421f" />
-
-width="919" height="578" alt="image" src="https://github.com/user-attachments/assets/13280ae5-bda8-4dbc-a366-624742f67fdf" />
-
-="914" height="709" alt="image" src="https://github.com/user-attachments/assets/189315f5-b1f2-4eee-83a8-d8f37ff9ce8c" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/42b48e9c-3e90-4ea2-b7b7-4f36599b40e3" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/19e24650-a52c-42fb-b180-9690695f7aa8" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/b0fa0b63-5fad-4c69-9441-eafae70c786b" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/a80984c9-6371-4829-bff9-987f718fb6c8" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/69b0e52a-4f5c-4ce8-8659-14c1361e0762" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/05edbadf-974d-49ad-9559-1c3fea9d5b19" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/e49a9df1-2c35-4196-84ea-5e9890571cac" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/b1a76407-1079-424b-ad1e-291806fdfb5e" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/7b2a4f00-4c61-4385-b2a4-10cae052f017" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/d93eabb4-6677-430b-9aeb-3ce79129c531" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/eae80919-5227-4428-9758-cbb05f27421f" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/13280ae5-bda8-4dbc-a366-624742f67fdf" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/189315f5-b1f2-4eee-83a8-d8f37ff9ce8c" />
 
 
 This repository is a minimal starter harness for participants building listing search and ranking systems.
