@@ -2,6 +2,8 @@
 
 > Built with Claude Code and AWS EC2 — see [aws.md](aws.md) and [CLAUDE.md](CLAUDE.md).
 
+Demo Video: https://drive.google.com/file/d/1V98dlAsOfrwu3g5DToSiGAzXopMvh75-/view?usp=sharing
+
 This repository is a minimal starter harness for participants building listing search and ranking systems.
 
 Using this harness is optional. You are free to build your submission with it, adapt only parts of it, or implement your own solution independently.
