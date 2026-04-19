@@ -12,11 +12,13 @@ Demo Video: https://drive.google.com/file/d/1V98dlAsOfrwu3g5DToSiGAzXopMvh75-/vi
 <img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/05edbadf-974d-49ad-9559-1c3fea9d5b19" />
 <img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/e49a9df1-2c35-4196-84ea-5e9890571cac" />
 <img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/b1a76407-1079-424b-ad1e-291806fdfb5e" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/189315f5-b1f2-4eee-83a8-d8f37ff9ce8c" />
 <img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/7b2a4f00-4c61-4385-b2a4-10cae052f017" />
+<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/13280ae5-bda8-4dbc-a366-624742f67fdf" />
 <img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/d93eabb4-6677-430b-9aeb-3ce79129c531" />
 <img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/eae80919-5227-4428-9758-cbb05f27421f" />
-<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/13280ae5-bda8-4dbc-a366-624742f67fdf" />
-<img width="800" style="height: auto;" alt="image" src="https://github.com/user-attachments/assets/189315f5-b1f2-4eee-83a8-d8f37ff9ce8c" />
+
+
 
 
 This repository is a minimal starter harness for participants building listing search and ranking systems.
